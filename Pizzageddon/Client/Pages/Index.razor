@@ -1,0 +1,59 @@
+﻿@page "/pizza"
+@inject IPizzaService PizzaService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Index</PageTitle>
+
+<h1>Pizzageddon PizzaMaker</h1>
+
+Welcome to your favourite source of the wonderful pizza
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Meat toppings</th>
+            <th>Vegetables</th>
+            <th>Allergies</th>
+            <th>Diets</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var pizza in PizzaService.Pizzas)
+        {
+            <tr>
+                <td>@pizza.Name</td>
+                <td>@pizza.Meat_toppings</td>
+                <td>@pizza.Vegetables</td>
+                <td>@pizza.Allergies</td>
+                <td>@pizza.Diets</td>
+                <td>
+                    <button class="btn btn-primary"
+                    @onclick="(() => ShowPizza(pizza.Id))">
+                        <i class="oi oi-pencil"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button class="btn btn-primary" @onclick="CreateNewPizza">Create new recipe</button>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await PizzaService.GetPizzas();
+    }
+
+    void ShowPizza(string id)
+    {
+        NavigationManager.NavigateTo($"editpizza/{id}");
+    }
+
+    void CreateNewPizza()
+    {
+        NavigationManager.NavigateTo("editpizza");
+    }
+}

@@ -1,0 +1,81 @@
+﻿@page "/editpizza"
+@page "/editpizza/{id:int}"
+@inject IPizzaService PizzaService
+
+@if (Id == null)
+{
+    <h3>Create a new Pizza</h3>
+}
+else
+{
+    <h3>Edit "@pizza.Name"</h3>    
+}
+
+<EditForm Model="pizza" OnSubmit="HandleSubmit">
+    <div>
+        <label for="name">Name</label>
+        <InputText id="name" @bind-Value="pizza.Name" class="form-control"></InputText>
+    </div>
+    <div>
+        <label for="meat_toppings">Meat toppings</label>
+        <InputText id="meat_toppings" @bind-Value="pizza.Meat_toppings" class="form-control"></InputText>
+    </div>
+    <div>
+        <label for="vegetables">Vegetables</label>
+        <InputText id="vegetables" @bind-Value="pizza.Vegetables" class="form-control"></InputText>
+    </div>
+    <div>
+        <label for="allergies">Allergies</label>
+        <InputText id="allergies" @bind-Value="pizza.Allergies" class="form-control"></InputText>
+    </div>
+    <div>
+        <label for="diets">Diets</label>
+        <InputText id="diets" @bind-Value="pizza.Diets" class="form-control"></InputText>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">@btnText</button>
+    @if (Id != null)
+    {
+        <button type="button" class="btn btn-danger" @onclick="DeletePizza">Delete Recipe</button>    
+    }
+    
+
+</EditForm>
+@code {
+    [Parameter]
+    public int? Id {get; set;}
+
+    string btnText = string.Empty;
+
+    Pizza pizza = new Pizza();
+
+    protected override void OnInitialized()
+    {
+        btnText = Id == null ? "Save" : "Update";
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != null)
+        {
+            pizza = await PizzaService.GetSinglePizza((int)Id);
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        if (Id == null)
+        {
+            await PizzaService.CreatePizza(pizza);
+        }
+        else
+        {
+            await PizzaService.UpdatePizza(pizza);
+        }
+    }
+
+    async Task DeletePizza()
+    {
+        await PizzaService.DeletePizza(pizza.Id);
+    }
+}
